@@ -1,0 +1,128 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8"> 
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+ 
+    <title>Inventory Tracking App</title>  
+     
+</head>  
+<body style="background-color:whitesmoke">
+    <nav class="navbar navbar-dark bg-dark">
+        <!-- Navbar content -->
+        <a class="navbar-brand" href="#"> MY LITTLE ONE STOP SHOP </a>
+        <a href="/export_to_csv" class="btn btn-success btn-lg ">Export Inventory Data</a>
+        
+
+    </nav>
+    <nav class="navbar navbar-light"style="background-color:slategrey">
+        <a class="navbar-brand mb-0 center h1 text-center">Featured Manufacturer Items</a>
+
+        <form action="{% url 'get_inventory' %}" method="post">
+            {% csrf_token %}
+            <input type="text" name="search" placeholder="Search All Items">
+            <button class="btn btn-primary btn-sm" type="submit" name="action">
+                Search
+
+            </button>
+        </form>
+    </nav>
+    <div class="container p-3 my-3 bg-blue text-black"style="background-color:whitesmoke">
+        <div class="row s4">
+            {% for post in final_postings %}
+            <div class="col s4">
+                <div class="card" style="width: 18rem;border-color:slategray; margin-bottom:2rem">
+                    <div class="card-image" style="width: 14rem; height:7rem;">
+                        <a><img src="{{ post.2 }}" alt="" style="max-width: 500px; max-height: 500px;"></a>
+                    </div>
+                    <div class="card-text text-truncate">
+                        <p>{{ post.0 }}</p>
+                    </div>
+                    <div class="card-action">
+                        <a>Product ID: {{ post.1 }}</a>
+                    </div>
+                    <div class="card-action">
+                        <a>Manufacturer Price: {{ post.3 }}</a>
+                    </div>
+                    <a class="btn btn-primary btn-lg" href="/order_inventory/{{ post.1 }}">Order</a>
+                </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    <nav class="navbar navbar-light" style="background-color:lightblue">
+        <a class="navbar-brand mb-0 center h1 text-center">  Store Inventory </a>
+    </nav>
+    <div class="container p-3 my-3 bg-blue text-black" style="background-color:lightblue">
+        <div class="row s4">
+            {% for item in items %}
+            <div class="col s4">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body">
+                        <div class="card-image" style="width: 14rem; height:7rem;">
+                            <a><img src="{{ item.image }}" alt="" style="max-width: 300px; max-height: 300px;"></a>
+                        </div>
+                        <h5 class="card-title  text-center">{{ item.name }}</h5>
+                        <p class="card-text">{{ item.description }}</p>
+                        <p class="card-text">Price: {{ item.retail_price }}</p>
+                        <p class="card-text">Quantity: {{ item.quantity }}</p>
+                        <p class="card-text">Location: {{ item.location }}</p>
+                        <center>
+                            <a href="/update/{{ item.itemcode }}" class="btn btn-success btn-sm">Update</a>
+                            <a href="/delete/{{ item.itemcode }}" class="btn btn-danger btn-sm">Delete</a>
+                            <a href="/create_order/{{ item.itemcode }}" class="btn btn-primary btn-sm">Order</a>
+                        </center>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+            <nav class="navbar navbar-light" style="background-color:lightblue">
+                <a class="navbar-brand mb-0 center h1 text-center">  Store Orders </a>
+            </nav>
+            <div class="container p-3 my-3 bg-blue text-black"style="background-color:lightblue">
+                <div class="row s4">
+
+                    {% for order in orders %}
+                    <div class="col s4">
+
+                        <div class="card" style="width: 18rem;">
+
+                            <div class="card-body">
+                                <h5 class="card-title text-danger"> Order ID : {{ order.orderID }}</h5>
+                                <p class="card-text">Item - {{ order.item.name }}</p>
+                                <p class="card-text">Quantity - {{ order.quantity }}</p>
+                                <p class="card-text">Item Total - {{ order.item_cost }}</p>
+                                <a class="btn btn-primary btn-lg" href="/calculate_shipment/{{ order.orderID }}">Ship</a>
+                            </div>
+                        </div>
+                    </div>
+                     {% endfor %}
+                    </div>
+                </div>
+            <nav class="navbar navbar-light"" style="background-color:lightblue">
+                <a class="navbar-brand mb-0 center h1 text-center">  Inventory Shipments </a>
+
+            </nav>
+            <div class="container p-3 my-3 bg-blue text-black" style="background-color:lightblue">
+                <div class="row s4">
+                    {% for ship in shipments %}
+                    <div class="card" style="width: 18rem;">
+                        <div class="col s4">
+                            <div class="card-body">
+                                <h5 class="card-title"> Shipment ID: {{ ship.order.orderID }}</h5>
+                                <p class="card-text">Start Location: {{ shipment.order.item.location }}</p>
+                                <p class="card-text">Destination - {{ ship.destination }}</p>
+                                <p class="card-text">Shipping Distance: {{ ship.distance}}</p>
+                                <p class="card-text">Shipping Duration(Days): {{ ship.duration}}</p>
+                                <p class="card-text">Timestap: {{ ship.created }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+</body>  
+</html>  
